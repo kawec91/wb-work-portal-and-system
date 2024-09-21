@@ -8,7 +8,7 @@ import Link from "next/link";
 export default async function Home() {
   const session = await getServerSession(authOptions);
   return (
-    <div>
+    <div className="w-full">
       <h1 className="text-4xl"> Home </h1>
       <Link className={buttonVariants()} href={"/admin"}>
         Open Admin

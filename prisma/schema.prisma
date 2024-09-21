@@ -65,6 +65,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  role          String    @default("member")
 
   @@map("users")
 }
@@ -76,4 +77,38 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model Announcement {
+  id          Int    @id @unique @default(autoincrement())
+  title       String
+  salary      String
+  image       String
+  description String
+  location    String
+}
+
+model Aplications {
+  id       Int     @id @unique @default(autoincrement())
+  email    String
+  image    String?
+  name     String?
+  document String?
+}
+
+model Raports {
+  id           Int      @id @unique @default(autoincrement())
+  creatorEmail String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  type         String
+}
+
+model Formulars {
+  id        Int      @id @unique @default(autoincrement())
+  document  String
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  addedBy   String
 }
