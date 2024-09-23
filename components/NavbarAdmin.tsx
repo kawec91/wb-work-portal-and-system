@@ -37,7 +37,7 @@ function NavbarAdmin() {
     setChosenMenu(name);
   };
   return (
-    <div className="min-h-[calc(100vh_-_150px)] w-full text-white py-2 px-4 flex flex-col gap-4">
+    <div className="min-h-[calc(100vh_-_150px)] w-full text-black py-2 px-4 flex flex-col gap-4">
       {menuList.map((item) => (
         <button
           key={`unique-id-${item.name}`}

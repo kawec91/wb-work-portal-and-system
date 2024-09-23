@@ -5,11 +5,11 @@ interface AdminLayoutProps {
 }
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   return (
-    <div className="w-full text-white flex items-center">
+    <div className="w-full text-black flex items-center bg-white">
       <div className="w-1/6">
         <NavbarAdmin />
       </div>
-      <div className="w-full">{children}</div>
+      <div className="w-full ">{children}</div>
     </div>
   );
 };

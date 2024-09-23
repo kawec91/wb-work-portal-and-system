@@ -27,13 +27,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pl">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col`}
       >
         <Provider>
-          <main className="h-screen flex flex-col justify-center items-center">
-            <Navbar />
+          <Navbar />
+          <main className="h-full flex flex-col justify-center items-center pt-16">
             {children}
           </main>
           <Toaster />
