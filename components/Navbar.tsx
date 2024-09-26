@@ -24,6 +24,11 @@ async function Navbar() {
           ) : (
             <></>
           )}
+          {myUser?.role === "user" || myUser?.role === "admin" ? (
+            <Link href={"/raports"}>Raporty</Link>
+          ) : (
+            <></>
+          )}
           <Link href={"/profile"}>Profil</Link>
           <UserAccountNavbar />
         </div>

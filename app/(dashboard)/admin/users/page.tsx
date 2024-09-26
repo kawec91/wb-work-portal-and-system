@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,6 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Select } from "@/components/ui/select";
+import MyTableRow from "@/components/MyTableRow";
 
 interface UserDataProps {
   id: string;
@@ -21,11 +25,32 @@ interface UserDataProps {
   role: string;
 }
 
-const AdminUsers = async () => {
-  const usersData: UserDataProps[] = await fetch(
-    `${process.env.NEXTAPP_URL}/api/users`
-  ).then((res) => res.json());
-  console.log("us", usersData);
+const AdminUsers = () => {
+  const [usersData, setUsersData] = useState<UserDataProps[]>([]);
+  const [editMode, setEditMode] = useState(false);
+  const [newRole, setNewRole] = useState("");
+  const handleEdit = (elementId: string) => {
+    const con = document.getElementById(`role-select-${elementId}`);
+    console.log(con);
+    if (editMode === false) {
+      setEditMode(true);
+    }
+
+    if (editMode === true) {
+      setEditMode(false);
+    }
+  };
+  useEffect(() => {
+    const getData = async () => {
+      const serverData = await fetch(`http://localhost:3000/api/users`).then(
+        (res) => res.json()
+      );
+
+      console.log("us", serverData);
+      setUsersData(serverData);
+    };
+    getData();
+  }, []);
   return (
     <div className="p-4 flex flex-col min-h-[calc(100vh_-_150px)] justify-start">
       <Table>
@@ -41,13 +66,7 @@ const AdminUsers = async () => {
         </TableHeader>
         <TableBody>
           {usersData.map((item, i) => (
-            <TableRow key={item.id}>
-              <TableCell className="font-medium">{i + 1}</TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.email}</TableCell>
-              <TableCell>{item.role}</TableCell>
-              <TableCell className="text-right">Comming soon</TableCell>
-            </TableRow>
+            <MyTableRow item={item} no={i} key={`mtr-${item.username}`} />
           ))}
         </TableBody>
       </Table>

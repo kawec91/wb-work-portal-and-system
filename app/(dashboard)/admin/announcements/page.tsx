@@ -1,9 +1,11 @@
-import AnnouncementCard from "@/components/AnnouncementCard";
+"use client";
+
+import AnnouncementAdminCard from "@/components/AnnouncementAdminCard";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-interface announcementsDataProps {
+interface announcementsDataPropsAdmim {
   id: number;
   title: string;
   salary: string;
@@ -12,11 +14,18 @@ interface announcementsDataProps {
   location: string;
 }
 
-const AdminAnnouncements = async () => {
-  const announcementsData = await fetch(
-    `http://localhost:3000/api/announcements`
-  ).then((res) => res.json());
+const AdminAnnouncements = () => {
+  const [announcementsDbListAdmin, setAnnouncementsDbListAdmin] = useState([]);
+  useEffect(() => {
+    const serverData = async () => {
+      const myData = await fetch(
+        `http://localhost:3000/api/announcements`
+      ).then((res) => res.json());
 
+      setAnnouncementsDbListAdmin(myData);
+    };
+    serverData();
+  }, []);
   return (
     <div className="min-h-[calc(100vh_-_150px)] flex flex-col justify-start">
       <div className="w-full text-right p-2 border-b-[1px] border-black">
@@ -24,10 +33,10 @@ const AdminAnnouncements = async () => {
           Nowe ogłoszenie
         </Link>
       </div>
-      <div className="p-2 h-full">
-        {announcementsData.map((item: announcementsDataProps) => {
-          <AnnouncementCard data={item} key={`ac-${item.id}`} />;
-        })}
+      <div className="p-2 h-full w-full flex flex-col items-center text-black gap-4">
+        {announcementsDbListAdmin.map((ann: announcementsDataPropsAdmim) => (
+          <AnnouncementAdminCard data={ann} />
+        ))}
       </div>
     </div>
   );

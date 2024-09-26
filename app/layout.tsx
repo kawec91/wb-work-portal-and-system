@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <Provider>
           <Navbar />
-          <main className="h-full flex flex-col justify-center items-center pt-16">
+          <main className="min-h-[calc(100vh_-_100px)] flex flex-col justify-center items-center pt-16">
             {children}
           </main>
           <Toaster />

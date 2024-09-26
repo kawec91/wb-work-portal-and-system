@@ -89,11 +89,12 @@ model Announcement {
 }
 
 model Aplications {
-  id       Int     @id @unique @default(autoincrement())
-  email    String
-  image    String?
-  name     String?
-  document String?
+  id        Int      @id @unique @default(autoincrement())
+  email     String
+  image     String?
+  name      String?
+  document  String?
+  createdAt DateTime @default(now())
 }
 
 model Raports {
