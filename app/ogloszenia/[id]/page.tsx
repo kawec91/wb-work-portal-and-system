@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import walletIcon from "../../../public/assets/icons/wallet.png";
 import locationIcon from "../../../public/assets/icons/location.png";
 import Link from "next/link";

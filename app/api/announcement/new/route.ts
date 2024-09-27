@@ -26,60 +26,6 @@ const FormSchema = z.object({
     description: z.string(),
   });
 
-// export async function POST(req: Request) {
-//     try {
-//         const body = await req.json();
-
-//         //connect schema to body
-//         const { title, salary, location, image, description } = FormSchema.parse(body);
-
-//         //Image Prepare And Upload
-//         const buffer = Buffer.from(await image.arrayBuffer());
-//         const relativeUploadDir = `/uploads/annoucements/${new Date(Date.now())
-//         .toLocaleDateString("id-ID", {
-//             day: "2-digit",
-//             month: "2-digit",
-//             year: "numeric",
-//          })
-//         .replace(/\//g, "-")}`;
-
-//         const uploadDir = join(process.cwd(), "public", relativeUploadDir);
-
-//         try {
-//             await stat(uploadDir);
-//         } catch (e) {
-//             if ((e as NodeJS.ErrnoException).code === "ENOENT") {
-//                 await mkdir(uploadDir, { recursive: true });
-//             }
-//             console.log((e as Error).message);
-//         } 
-
-//         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-//         const filename = `${image.name.replace(
-//             /\.[^/.]+$/,
-//             ""
-//         )}-${uniqueSuffix}.${mime.getExtension(image.type)}`;
-//         await writeFile(`${uploadDir}/${filename}`, buffer);
-//         const fileUrl = `${relativeUploadDir}/${filename}`;
-//         //END of uploading file and got a link
-
-//         //Create new Announcement
-//         const newAnnouncement = await db.announcement.create({
-//             data: {
-//                 title,
-//                 salary,
-//                 location, 
-//                 image: fileUrl, 
-//                 description
-//             }
-//         })
-
-//         return NextResponse.json({ announcement: newAnnouncement, message: 'User created succesfully'}, {status: 201});
-//     } catch (error) {
-//         console.log(error)
-//         return NextResponse.json({ message: "Something went wrong."}, { status: 500 });
-//     }
-// }
 export async function POST(req: Request) {
     try {
       // Parse form data instead of JSON

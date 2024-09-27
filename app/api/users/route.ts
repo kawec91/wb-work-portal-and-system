@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET() {
     //Get all users data
     const res = await db.user.findMany();
 
@@ -9,6 +9,7 @@ export async function GET(req: Request) {
     //Prepare all user data without password
     for(let i = 0 ; i < res.length; i++) {
         const {password: userPass, ...rest} = res[i];
+        
         resWithoutPassword.push(rest);
     }
 

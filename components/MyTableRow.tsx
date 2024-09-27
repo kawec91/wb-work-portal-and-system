@@ -26,10 +26,12 @@ const MyTableRow = ({ item, no }: MyTableRowProps) => {
   const handleEdit = () => {
     setNewRole(oldRole);
     if (editMode === false) {
+      console.log(newRole);
       setEditMode(true);
     }
 
     if (editMode === true) {
+      setOldRole(newRole);
       setEditMode(false);
     }
   };

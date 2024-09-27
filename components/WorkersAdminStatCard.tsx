@@ -21,7 +21,7 @@ const WorkersAdminStatCard = ({ icon, text }: WorkersAdminStatCardProps) => {
         );
         if (data) {
           let counter = 0;
-          for (let i of data) {
+          for (const i of data) {
             if (i.role === "admin" || i.role === "user") {
               counter += 1;
             }

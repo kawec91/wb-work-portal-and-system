@@ -38,6 +38,7 @@ const AnnouncementAdminCard = ({ data }: AnnouncementAdminCardProps) => {
         setMessage(errorData.message || "Failed to delete announcement.");
       }
     } catch (error) {
+      console.log(error);
       setMessage("An error occurred while deleting the announcement.");
     } finally {
       setIsDeleting(false);

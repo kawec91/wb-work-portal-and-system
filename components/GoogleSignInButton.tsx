@@ -23,6 +23,7 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({ children }) => {
         description: "Ooops! Something went wrong.",
         variant: "destructive",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

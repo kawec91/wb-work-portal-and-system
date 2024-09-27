@@ -1,8 +1,6 @@
 "use client";
 
 import AnnouncementCard from "@/components/AnnouncementCard";
-import { buttonVariants } from "@/components/ui/button";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface announcementsDataProps {

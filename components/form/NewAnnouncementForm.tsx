@@ -11,7 +11,6 @@ const NewAnnouncementForm = () => {
   const [title, setTitle] = useState("");
   const [salary, setSalary] = useState("");
   const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [content, setContent] = useState<string>("");
 
@@ -49,7 +48,7 @@ const NewAnnouncementForm = () => {
     } catch (error) {
       console.error("Error:", error);
     } finally {
-      router.push("http://localhost:3000/admin/announcements");
+      router.push(`${process.env.NEXTAPP_URL}/admin/announcements`);
     }
   };
 
@@ -116,7 +115,7 @@ const NewAnnouncementForm = () => {
         />
       </div>
 
-      <Button type="submit">Create Announcement</Button>
+      <Button type="submit">Utwórz</Button>
     </form>
   );
 };

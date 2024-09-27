@@ -5,12 +5,10 @@ import {
   Table,
   TableBody,
   TableCaption,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Select } from "@/components/ui/select";
 import MyTableRow from "@/components/MyTableRow";
 
 interface UserDataProps {
@@ -27,19 +25,7 @@ interface UserDataProps {
 
 const AdminUsers = () => {
   const [usersData, setUsersData] = useState<UserDataProps[]>([]);
-  const [editMode, setEditMode] = useState(false);
-  const [newRole, setNewRole] = useState("");
-  const handleEdit = (elementId: string) => {
-    const con = document.getElementById(`role-select-${elementId}`);
-    console.log(con);
-    if (editMode === false) {
-      setEditMode(true);
-    }
 
-    if (editMode === true) {
-      setEditMode(false);
-    }
-  };
   useEffect(() => {
     const getData = async () => {
       const serverData = await fetch(`http://localhost:3000/api/users`).then(

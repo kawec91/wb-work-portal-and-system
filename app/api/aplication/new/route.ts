@@ -1,57 +1,79 @@
-// app/api/aplication/new/route.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
-import { db } from '@/lib/db';
+import { db } from "@/lib/db";
+import { NextResponse } from "next/server";
+import * as z from 'zod';
+import mime from "mime";
+import { join } from "path";
+import { stat, mkdir, writeFile } from "fs/promises";
+import { zfd } from "zod-form-data";
 
-
-// Setup multer for file storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(process.cwd(), 'public/uploads/files', req.body.email);
-    fs.mkdirSync(dir, { recursive: true }); // Ensure the directory exists
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
+// Define the form schema validation for application
+const ApplicationSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  name: z.string().optional(),
+  document: zfd
+    .file()
+    .refine((file) => file.size < 10000000, { // 10MB limit
+      message: "Document can't be bigger than 10MB.",
+    })
+    .refine((file) => ["application/pdf", "image/jpeg", "image/png"].includes(file.type), {
+      message: "Document format must be PDF, JPG, or PNG.",
+    })
+    .optional(),
+  image: z.string().optional()
 });
 
-const upload = multer({ storage });
+export async function POST(req: Request) {
+  try {
+    // Parse form data
+    const formData = await req.formData();
 
-// Middleware to handle file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+    // Extract fields and files from FormData
+    const email = formData.get("email") as string;
+    const name = formData.get("name") as string | null;
+    const document = formData.get("document") as File | null;
+    const image = formData.get("image") as string | null;
 
-// Using multer to handle the incoming request
-const handler = (req: NextApiRequest, res: NextApiResponse) => {
-  upload.single('document')(req as any, res as any, async (err: any) => {
-    if (err) {
-      return res.status(500).json({ error: "Error uploading file." });
+    // Validate form data
+    const parsedData = ApplicationSchema.parse({
+      email, name, document, image,
+    });
+
+    let documentUrl = null;
+
+    // Handle document upload if provided
+    if (document) {
+      const docBuffer = Buffer.from(await document.arrayBuffer());
+      const docUploadDir = `/uploads/documents/${new Date().toISOString().slice(0, 10)}`;
+      const docDir = join(process.cwd(), "public", docUploadDir);
+
+      try {
+        await stat(docDir);
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+          await mkdir(docDir, { recursive: true });
+        }
+      }
+
+      const docSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const docFilename = `${document.name.replace(/\.[^/.]+$/, "")}-${docSuffix}.${mime.getExtension(document.type)}`;
+      await writeFile(`${docDir}/${docFilename}`, docBuffer);
+      documentUrl = `${docUploadDir}/${docFilename}`;
     }
 
-    const { email, name, image } = req.body;
-    const documentPath = `/uploads/files/${email}/${req.file?.originalname}`;
 
-    // Save the application data to the database
-    try {
-      await db.aplications.create({
-        data: {
-          email,
-          name,
-          image,
-          document: documentPath,
-        },
-      });
-      return res.status(200).json({ message: "File uploaded successfully." });
-    } catch (error) {
-      return res.status(500).json({ error: "Error saving to database." });
-    }
-  });
-};
+    // Save the application to the database
+    const newApplication = await db.aplications.create({
+      data: {
+        email: parsedData.email,
+        name: parsedData.name || null,
+        document: documentUrl,
+        image: parsedData.image || null,
+      },
+    });
 
-export default handler;
+    return NextResponse.json({ application: newApplication, message: 'Application created successfully' }, { status: 201 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: "Something went wrong." }, { status: 500 });
+  }
+}

@@ -1,79 +1,119 @@
 "use client";
+
+import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { zfd } from "zod-form-data";
 
-const formSchema = z.object({
-  document: z.instanceof(File).refine(
-    (file) => {
-      return (
-        file.type === "application/pdf" ||
-        file.type === "application/msword" ||
-        file.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      );
-    },
-    {
-      message: "File must be a PDF or Word document.",
-    }
+// Zod schema validation
+const applicationSchema = z.object({
+  document: zfd.file(
+    z
+      .instanceof(File)
+      .refine((file) => file.size <= 10000000, "File size should be under 10MB")
+      .refine(
+        (file) =>
+          ["application/pdf", "image/jpeg", "image/png", "image/jpg"].includes(
+            file.type
+          ),
+        "File format must be PDF, JPG, JPEG, or PNG"
+      )
   ),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type ApplicationFormData = z.infer<typeof applicationSchema>;
 
 const ApplicationForm = () => {
+  const { data: session } = useSession();
+  const { toast } = useToast();
+
+  // Derive name and image URL from session data
+  const userName =
+    session?.user?.name ||
+    session?.user?.username ||
+    session?.user?.email ||
+    "";
+  const userEmail = session?.user?.email || "";
+  const userImage = session?.user?.image || ""; // Assuming 'image' URL is in the session
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    formState: { errors, isSubmitting },
+  } = useForm<ApplicationFormData>({
+    resolver: zodResolver(applicationSchema),
   });
 
-  const { data: session } = useSession();
-  const [uploading, setUploading] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<File | null>(null);
 
-  const onSubmit = async (data: FormData) => {
-    setUploading(true);
+  const onSubmit = async (data: ApplicationFormData) => {
     const formData = new FormData();
-
-    // Append user data from session
-    formData.append("email", session?.user.email || "");
-    formData.append("image", session?.user.image || "");
-    formData.append(
-      "name",
-      session?.user.username || session?.user.name || session?.user.email || ""
-    );
-
-    // Append the document
-    formData.append("document", data.document); // Ensure this is correct
-
-    const response = await fetch("/api/aplication/new", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      // Handle success (e.g., show a success message)
-    } else {
-      // Handle error (e.g., show an error message)
+    formData.append("email", userEmail);
+    formData.append("name", userName);
+    formData.append("image", userImage); // Sending the image URL from session
+    if (selectedDocument) {
+      formData.append("document", selectedDocument);
     }
 
-    setUploading(false);
+    try {
+      const response = await fetch("/api/aplication/new", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Application submitted successfully!",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Ooops! Failed to submit application.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Ooops! An unexpected error occurred.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Document File */}
       <div>
-        <label>Document:</label>
-        <input type="file" {...register("document")} />
-        {errors.document && <p>{errors.document.message}</p>}
+        <Label htmlFor="document">Upload Document (PDF, JPG, JPEG, PNG)</Label>
+        <Input
+          type="file"
+          id="document"
+          accept="application/pdf, image/jpeg, image/png, image/jpg"
+          {...register("document")}
+          onChange={(e) => {
+            if (e.target.files?.[0]) {
+              setSelectedDocument(e.target.files[0]);
+            }
+          }}
+        />
+        {errors.document && (
+          <p className="text-red-600">{errors.document.message}</p>
+        )}
       </div>
-      <button type="submit" disabled={uploading}>
-        {uploading ? "Uploading..." : "Submit"}
-      </button>
+
+      {/* Submit Button */}
+      <Button type="submit" disabled={isSubmitting} className="mt-4">
+        {isSubmitting ? "Submitting..." : "Submit Application"}
+      </Button>
     </form>
   );
 };

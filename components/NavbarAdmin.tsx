@@ -33,7 +33,7 @@ function NavbarAdmin() {
     },
   ];
 
-  const handleMenuChoice = (name: any) => {
+  const handleMenuChoice = (name: string) => {
     setChosenMenu(name);
   };
   return (

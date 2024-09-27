@@ -35,7 +35,7 @@ const AdminAnnouncements = () => {
       </div>
       <div className="p-2 h-full w-full flex flex-col items-center text-black gap-4">
         {announcementsDbListAdmin.map((ann: announcementsDataPropsAdmim) => (
-          <AnnouncementAdminCard data={ann} />
+          <AnnouncementAdminCard data={ann} key={`${ann.id}-ann-adm-card`} />
         ))}
       </div>
     </div>
