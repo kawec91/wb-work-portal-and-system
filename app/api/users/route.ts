@@ -8,7 +8,8 @@ export async function GET() {
     const resWithoutPassword = []
     //Prepare all user data without password
     for(let i = 0 ; i < res.length; i++) {
-        const {password: userPass, ...rest} = res[i];
+        //eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {password: _, ...rest} = res[i];
         
         resWithoutPassword.push(rest);
     }

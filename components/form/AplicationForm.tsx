@@ -52,6 +52,7 @@ const ApplicationForm = () => {
 
   const [selectedDocument, setSelectedDocument] = useState<File | null>(null);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSubmit = async (data: ApplicationFormData) => {
     const formData = new FormData();
     formData.append("email", userEmail);
@@ -97,7 +98,7 @@ const ApplicationForm = () => {
         <Input
           type="file"
           id="document"
-          accept="application/pdf, image/jpeg, image/png, image/jpg"
+          //accept="application/pdf, image/jpeg, image/png, image/jpg"
           {...register("document")}
           onChange={(e) => {
             if (e.target.files?.[0]) {

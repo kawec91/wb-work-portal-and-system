@@ -58,7 +58,8 @@ export async function POST(req: Request) {
         });
 
         //Catch password and rest for output without password
-        const { password: newUserPassword, ...rest} = newUser;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _, ...rest} = newUser;
 
         return NextResponse.json({ user: rest, message: 'User created succesfully'}, {status: 201});
     } catch (error) {
